@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Josh W Comeau custom reset
+  https://www.joshwcomeau.com/css/custom-css-reset/
+*/
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html, body {
+  height: 100%;
+}
+body {
+  line-height: 1.7; /* Increased slightly for serif readability */
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+#root, #__next {
+  isolation: isolate;
+}
+/* End Reset */
+
+/* Define CSS variables outside of layers for broader accessibility */
+:root {
+  /* Theoforge Light Theme based on color_guide.md */
+  --background: 210 17% 98%; /* Neutral 50 (#F9FAFB) */
+  --foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --card: 0 0% 100%; /* White (#FFFFFF) */
+  --card-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --popover: 0 0% 100%; /* White (#FFFFFF) */
+  --popover-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --primary: 174 100% 21%; /* Teal 700 (#00695C) */
+  --primary-foreground: 0 0% 100%; /* White */
+  --primary-dark: 170 100% 15%; /* Teal 900 (#004D40) */
+  --secondary: 43 90% 38%; /* Muted Gold 700 (#B8860B) */
+  --secondary-foreground: 0 0% 100%; /* White */
+  --secondary-dark: 46 78% 31%; /* Muted Gold 800 (#8B6B11) - Approx */
+  --muted: 223 14% 91%; /* Neutral 200 (#E5E7EB) */
+  --muted-foreground: 219 14% 34%; /* Neutral 600 (#4B5563) */
+  --accent: 31 100% 48%; /* Focused Orange 600 (#F57C00) */
+  --accent-foreground: 0 0% 100%; /* White */
+  --accent-dark: 31 100% 36%; /* Focused Orange 800 (#B75A00) - Approx */
+  --destructive: 0 72% 51%; /* Red 600 (#DC2626) */
+  --destructive-foreground: 210 17% 98%; /* Neutral 50 (#F9FAFB) */
+  --info: 214 89% 52%; /* Blue 500 (#2196F3) */
+  --success: 122 39% 49%; /* Green 500 (#4CAF50) */
+  --warning: 36 100% 50%; /* Amber 500 (#FF9800) */
+  --border: 223 14% 91%; /* Neutral 200 (#E5E7EB) */
+  --input: 221 12% 85%; /* Neutral 300 (#D1D5DB) */
+  --ring: 174 100% 21%; /* Primary - Teal 700 (#00695C) */
+  --radius: 0.5rem; /* Keep shadcn default radius */
+}
+
+.dark {
+  /* Theoforge Dark Theme based on color_guide.md */
+  --background: 222 39% 11%; /* Neutral 900 (#111827) */
+  --foreground: 210 17% 98%; /* Neutral 50 (#F9FAFB) */
+  --card: 215 28% 17%; /* Neutral 800 (#1F2937) */
+  --card-foreground: 210 17% 98%; /* Neutral 50 (#F9FAFB) */
+  --popover: 215 28% 17%; /* Neutral 800 (#1F2937) */
+  --popover-foreground: 210 17% 98%; /* Neutral 50 (#F9FAFB) */
+  --primary: 177 51% 46%; /* Teal 400 (#38B2AC) - Lighter for dark */
+  --primary-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --primary-dark: 175 71% 30%; /* Teal 600 (#14867F) - Darker hover for dark */
+  --secondary: 46 65% 52%; /* Muted Gold 400 (#D4AF37) - Lighter for dark */
+  --secondary-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --secondary-dark: 44 78% 42%; /* Muted Gold 600 (#C6991A) - Darker hover for dark */
+  --muted: 215 19% 27%; /* Neutral 700 (#374151) */
+  --muted-foreground: 221 12% 65%; /* Neutral 400 (#9CA3AF) */
+  --accent: 27 96% 61%; /* Focused Orange 400 (#FB923C) - Lighter for dark */
+  --accent-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --accent-dark: 30 98% 54%; /* Focused Orange 500 (#F97316) - Darker hover for dark */
+  --destructive: 0 91% 71%; /* Red 400 (#F87171) */
+  --destructive-foreground: 222 39% 11%; /* Neutral 900 (#111827) */
+  --info: 210 96% 74%; /* Blue 300 (#90CAF9) */
+  --success: 125 57% 60%; /* Green 300 (#81C784) */
+  --warning: 39 100% 67%; /* Amber 300 (#FFB74D) */
+  --border: 215 19% 27%; /* Neutral 700 (#374151) */
+  --input: 219 14% 34%; /* Neutral 600 (#4B5563) */
+  --ring: 177 51% 46%; /* Primary - Teal 400 (#38B2AC) */
+}
+
+@layer base {
+  /* Apply base body styles */
+  body {
+    line-height: 1.7; /* Keep existing line-height for serif */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Default paragraph spacing using modular scale */
+  p {
+    @apply mb-4; /* Apply 1rem margin */
+  }
+
+  /* Remove default paragraph margin when it's the last child */
+  p:last-child {
+    @apply mb-0;
+  }
+
+  /* Ensure headings have appropriate default margins (can be overridden) */
+  h1, h2, h3, h4, h5, h6 {
+    @apply mb-6; /* Apply 1.5rem margin */
+    @apply font-sans; /* Default to Poppins */
+    @apply font-semibold; /* Default to semibold */
+  }
+
+  h1:last-child, h2:last-child, h3:last-child, h4:last-child, h5:last-child, h6:last-child {
+    @apply mb-0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  /* overflow-x: hidden;  Temporarily commented out for testing Sheet */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /* Use direct font-family names now */
+  font-family: 'Poppins', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Character Chat Styles */
+.dot-typing {
+  position: relative;
+  left: -9999px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #6b7280;
+  color: #6b7280;
+  box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+  0% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+  16.667% {
+    box-shadow: 9984px -10px 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+  33.333% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+  50% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px -10px 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+  66.667% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+  83.333% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px -10px 0 0 #6b7280;
+  }
+  100% {
+    box-shadow: 9984px 0 0 0 #6b7280, 9999px 0 0 0 #6b7280, 10014px 0 0 0 #6b7280;
+  }
+}

@@ -1,0 +1,10 @@
+[build]
+  command = "next build"
+  publish = ".next"
+
+[functions]
+  directory = "out_functions"
+
+[plugins]
+  # Installs the Next.js Runtimebild plugin
+  - package: "@netlify/plugin-nextjs"
