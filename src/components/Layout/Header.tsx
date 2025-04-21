@@ -68,12 +68,13 @@ const Header: React.FC = () => {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full border-b border-border/40",
-          "bg-white/95 dark:bg-neutral-950/95",
-          "backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-neutral-950/60"
+          "fixed top-0 z-50 w-full",
+          "bg-gradient-to-r from-black/80 via-black/70 to-black/80",
+          "backdrop-blur-md supports-[backdrop-filter]:bg-black/30",
+          "transition-all duration-300"
         )}
       >
-        <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4">
+        <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4">
           {/* Logo and Name */}
           <Link href="/" className="flex items-center shrink-0 mr-4">
             <Image
@@ -84,20 +85,20 @@ const Header: React.FC = () => {
               height={16}
               priority
             />
-            <span className="ml-2 font-poppins font-semibold text-lg text-foreground dark:text-foreground-dark hidden sm:inline">
+            <span className="ml-2 font-poppins font-semibold text-lg text-white dark:text-white hidden sm:inline">
               TheoForge
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden sm:flex sm:gap-4 lg:gap-6 flex-grow justify-center">
+          <nav className="hidden sm:flex sm:gap-6 lg:gap-8 flex-grow justify-center">
              {navItems.map((item) => (
               <Link
                 key={item.label}
                 href={item.path}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.path ? "text-primary dark:text-primary-light" : "text-muted-foreground"
+                  pathname === item.path ? "text-primary dark:text-primary-light" : "text-white dark:text-white"
                 )}
               >
                 {item.label}
@@ -146,17 +147,21 @@ const Header: React.FC = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setLoginModalOpen(true)}
-                >
-                  Log in
-                </Button>
-                <Button 
-                  onClick={() => setRegisterModalOpen(true)}
-                >
-                  Sign up
-                </Button>
+                <Link href="/login">
+                  <Button 
+                    variant="outline" 
+                    className="border-white text-white hover:bg-white/10 hover:text-primary transition-all duration-300"
+                  >
+                    Log in
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button
+                    className="bg-primary hover:bg-primary/80 text-white transition-all duration-300"
+                  >
+                    Sign up
+                  </Button>
+                </Link>
               </>
             )}
           </div>
@@ -169,10 +174,10 @@ const Header: React.FC = () => {
                   <MenuIcon className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full max-w-sm p-6">
+              <SheetContent side="left" className="w-full max-w-sm p-6 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-lg border-r border-white/10 text-white">
                 {/* Optional Sheet Header */}
                 <SheetHeader className="mb-6">
-                  <SheetTitle>
+                  <SheetTitle className="text-white">
                     <Link href="/" className="flex items-center" onClick={(e) => (e.target as HTMLElement).closest<HTMLElement>('[data-radix-sheet-close]')?.click()}>
                        <Image
                           className="dark:invert mr-2"
@@ -182,7 +187,7 @@ const Header: React.FC = () => {
                           height={12}
                           priority
                         />
-                        <span className="font-poppins font-semibold text-lg text-foreground dark:text-foreground-dark">
+                        <span className="font-poppins font-semibold text-lg text-white">
                           TheoForge
                         </span>
                     </Link>
@@ -196,7 +201,7 @@ const Header: React.FC = () => {
                         href={item.path}
                         className={cn(
                           "block py-2 text-sm font-medium transition-colors hover:text-primary",
-                          pathname === item.path ? "text-primary dark:text-primary-light" : "text-muted-foreground"
+                          pathname === item.path ? "text-primary dark:text-primary-light" : "text-white"
                         )}
                       >
                         {item.label}
@@ -205,7 +210,7 @@ const Header: React.FC = () => {
                   ))}
                   
                   {/* Mobile Authentication UI */}
-                  <div className="mt-4 pt-4 border-t border-border">
+                  <div className="mt-4 pt-4 border-t border-white/20">
                     {isAuthenticated && user ? (
                       <>
                         <SheetClose asChild>
@@ -237,21 +242,23 @@ const Header: React.FC = () => {
                     ) : (
                       <div className="flex flex-col gap-2">
                         <SheetClose asChild>
-                          <Button 
-                            onClick={() => setLoginModalOpen(true)}
-                            variant="outline" 
-                            className="w-full"
-                          >
-                            Log in
-                          </Button>
+                          <Link href="/login" className="w-full">
+                            <Button 
+                              variant="outline" 
+                              className="w-full border-white text-white hover:bg-white/10 hover:text-primary transition-all duration-300"
+                            >
+                              Log in
+                            </Button>
+                          </Link>
                         </SheetClose>
                         <SheetClose asChild>
-                          <Button 
-                            onClick={() => setRegisterModalOpen(true)}
-                            className="w-full"
-                          >
-                            Sign up
-                          </Button>
+                          <Link href="/register" className="w-full">
+                            <Button 
+                              className="w-full bg-primary hover:bg-primary/80 text-white transition-all duration-300"
+                            >
+                              Sign up
+                            </Button>
+                          </Link>
                         </SheetClose>
                       </div>
                     )}

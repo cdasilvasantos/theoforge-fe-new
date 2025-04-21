@@ -76,7 +76,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${inter.variable} ${publicSans.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased bg-background text-foreground dark:bg-background dark:text-foreground">
         <Header />
-        {/* Remove top padding to eliminate the white space */}
+        {/* Add padding to account for fixed header */}
+        <div className="pt-20"></div>
         <main>{children}</main> 
         <Footer />
         {/* Add ChatBox component */}

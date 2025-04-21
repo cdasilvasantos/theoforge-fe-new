@@ -16,9 +16,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
   const { id, quote, name, title, company, image } = testimonial;
 
   return (
-    <BaseCard key={id} className="h-full"> 
+    <BaseCard key={id} className="h-full shadow-md hover:shadow-lg transition-shadow duration-300"> 
       {/* Image/Avatar Container (Top, full width, aspect-video) */}
-      <div className="w-full relative aspect-video overflow-hidden rounded-t-lg bg-neutral-100 dark:bg-neutral-700">
+      <div className="w-full relative aspect-[4/3] sm:aspect-video overflow-hidden rounded-t-lg bg-neutral-100 dark:bg-neutral-700">
         {image ? (
           <Image
             src={image}
@@ -35,23 +35,23 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
       </div>
 
       {/* Content Container (Below image, standard padding) */} 
-      <div className="p-6 pb-8 flex flex-col flex-grow"> 
+      <div className="p-4 sm:p-6 pb-6 sm:pb-8 flex flex-col flex-grow"> 
         {/* Quote (First, with icon) */} 
-        <div className="relative mb-6 flex-grow">
-          <FaQuoteLeft className="text-secondary text-2xl mb-2" />
+        <div className="relative mb-4 sm:mb-6 flex-grow">
+          <FaQuoteLeft className="text-secondary text-xl sm:text-2xl mb-2" />
           <Paragraph 
-            className="italic text-lg text-gray-700 dark:text-gray-200 leading-relaxed"
+            className="italic text-base sm:text-lg text-gray-700 dark:text-gray-200 leading-relaxed line-clamp-5 sm:line-clamp-none"
           >
             {quote}
           </Paragraph>
         </div>
 
         {/* Author Info (Aligned left now) */} 
-        <div className="mt-auto pt-4 border-t border-secondary/20 dark:border-secondary/30"> 
-          <Heading level={5} className="mb-1 font-semibold text-lg">
+        <div className="mt-auto pt-3 sm:pt-4 border-t border-secondary/20 dark:border-secondary/30"> 
+          <Heading level={5} className="mb-1 font-semibold text-base sm:text-lg">
             {name}
           </Heading>
-          <Paragraph variant="body2" className="text-gray-600 dark:text-gray-400">
+          <Paragraph variant="body2" className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
             <span className="font-medium">{title}</span>{title && company ? ', ' : ''}{company}
           </Paragraph>
         </div>
