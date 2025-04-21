@@ -27,7 +27,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ maxItems }) =
   }
 
   return (
-    <div>
+    <div className="py-12 md:py-16">
       <div className="px-4 md:px-6 lg:px-8">
         <SectionHeading align="center" className="text-3xl md:text-4xl lg:text-5xl mb-6 md:mb-12">
           What Our Clients Say

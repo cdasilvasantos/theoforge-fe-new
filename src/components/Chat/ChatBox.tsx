@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { MessageSquare, Send, X, Minimize2, Maximize2 } from 'lucide-react';
 import axios from 'axios';
+import { useAuthStore } from '@/lib/store/authStore';
 
 // Create a random ID function instead of relying on uuid
 function generateId() {
@@ -41,6 +42,9 @@ interface GuestData {
     timestamp: string;
   }[];
   page_views: string[];
+  user_id?: string;
+  user_email?: string;
+  user_role?: string;
 }
 
 const ChatBox: React.FC = () => {
@@ -58,6 +62,9 @@ const ChatBox: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chatCompleted, setChatCompleted] = useState(false);
+  
+  // Get authentication state
+  const { isAuthenticated, user, token } = useAuthStore();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -240,12 +247,37 @@ const ChatBox: React.FC = () => {
         status: 'NEW'
       };
       
+      // If user is authenticated, add user information to guest data
+      if (isAuthenticated && user) {
+        updatedGuestData.user_id = user.id;
+        updatedGuestData.user_email = user.email;
+        updatedGuestData.user_role = user.role;
+        
+        // If name is not provided in chat, use the authenticated user's name
+        if (!updatedGuestData.name || updatedGuestData.name.trim() === '') {
+          updatedGuestData.name = `${user.first_name} ${user.last_name}`.trim() || user.nickname || user.email;
+        }
+        
+        // If contact info is not provided in chat, use the authenticated user's email
+        if (!updatedGuestData.contact_info || updatedGuestData.contact_info.trim() === '') {
+          updatedGuestData.contact_info = user.email;
+        }
+      }
+      
       // Submit to API - remove trailing slash to match our API route
       console.log('Submitting guest data:', updatedGuestData);
+      
+      // Set authorization header if user is authenticated
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (isAuthenticated && token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await axios.post(`${API_BASE_URL}/guests`, updatedGuestData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers
       });
       
       if (response.status === 200 || response.status === 201) {

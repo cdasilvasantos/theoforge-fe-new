@@ -9,7 +9,7 @@ import Paragraph from '../Common/Paragraph'; // Import the Paragraph component
 const HeroSection = () => (
   // Replace fixed height with min-height, remove flex center, add explicit padding
   <section
-    className="min-h-[90vh] flex flex-col justify-center text-white bg-[url('/hero_star_bg.png')] bg-cover bg-center bg-no-repeat relative overflow-hidden pt-20 sm:pt-24 md:pt-32"
+    className="min-h-[100vh] w-full flex flex-col justify-center text-white bg-[url('/hero_star_bg.png')] bg-cover bg-center bg-no-repeat relative overflow-hidden pt-20 sm:pt-24 md:pt-32"
   >
     {/* Overlay */}
     <div
