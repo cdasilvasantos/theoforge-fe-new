@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow
 } from "../../components/ui/table";
+import DashboardStats from '@/components/Admin/DashboardStats';
 import {
   Dialog,
   DialogContent,
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
   const [guestSearchTerm, setGuestSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
+  const [isUpdatingGuest, setIsUpdatingGuest] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isGuestDetailsDialogOpen, setIsGuestDetailsDialogOpen] = useState(false);
@@ -97,6 +99,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [guestError, setGuestError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [editFormData, setEditFormData] = useState<EditFormData>({
     nickname: '',
     email: '',
@@ -112,6 +115,28 @@ export default function AdminDashboard() {
     role: 'USER'
   });
 
+  // Load active tab from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTab = localStorage.getItem('adminActiveTab');
+      if (savedTab) {
+        setActiveTab(savedTab);
+      }
+    }
+  }, []);
+  
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('adminActiveTab', activeTab);
+    }
+  }, [activeTab]);
+
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+  
   // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
@@ -124,7 +149,7 @@ export default function AdminDashboard() {
       setSuccessMessage(null);
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/auth/users`, {
+        const response = await axios.get(`${API_BASE_URL}/admin/users`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -162,8 +187,8 @@ export default function AdminDashboard() {
       setSuccessMessage(null);
 
       try {
-        console.log('Attempting to fetch guests from:', `/api/guests`);
-        const response = await axios.get(`/api/guests`, {
+        console.log('Attempting to fetch guests from:', `${API_BASE_URL}/admin/guests`);
+        const response = await axios.get(`${API_BASE_URL}/admin/guests`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Cache-Control': 'no-cache',
@@ -272,14 +297,11 @@ export default function AdminDashboard() {
       
       // Call API to delete user - using the correct endpoint
       const response = await axios.delete(
-        `${API_BASE_URL}/auth/delete`,
+        `${API_BASE_URL}/admin/users?id=${selectedUser.id}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          data: {
-            id: selectedUser.id
           }
         }
       );
@@ -329,100 +351,27 @@ export default function AdminDashboard() {
     setSuccessMessage(null);
     
     try {
-      // Create a payload with only the changed fields
-      const changedFields: Partial<EditFormData> = {};
-      
-      // Compare each field with original value and only include if changed
-      if (editFormData.nickname !== originalFormData.nickname) {
-        changedFields.nickname = editFormData.nickname;
-      }
-      
-      if (editFormData.email !== originalFormData.email) {
-        changedFields.email = editFormData.email;
-      }
-      
-      if (editFormData.first_name !== originalFormData.first_name) {
-        changedFields.first_name = editFormData.first_name;
-      }
-      
-      if (editFormData.last_name !== originalFormData.last_name) {
-        changedFields.last_name = editFormData.last_name;
-      }
-      
-      if (editFormData.role !== originalFormData.role) {
-        changedFields.role = editFormData.role;
-      }
-      
-      // If no fields were changed, just close the dialog
-      if (Object.keys(changedFields).length === 0) {
-        setIsEditDialogOpen(false);
-        setIsUpdatingUser(false);
-        return;
-      }
-      
-      console.log('Updating user with changed fields only:', changedFields);
-      
-      // Check if token is available and log its first few characters for debugging
-      if (!token) {
-        throw new Error('No authentication token available');
-      }
-      
-      console.log('Using token (first 10 chars):', token.substring(0, 10) + '...');
-      console.log('API endpoint:', `${API_BASE_URL}/auth/admin/users/${selectedUser.id}`);
-      
-      // Call the admin API endpoint to update user
       const response = await axios.put(
-        `${API_BASE_URL}/auth/admin/users/${selectedUser.id}`, 
-        changedFields,
+        `${API_BASE_URL}/admin/users?id=${selectedUser.id}`,
+        editFormData,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
       );
-      
+
       if (response.status === 200) {
-        // Update local state with the updated user
-        const updatedUsers = users.map(u => 
-          u.id === selectedUser.id ? { 
-            ...u, 
-            ...changedFields, // Only update the changed fields
-            email_verified: u.email_verified // Preserve verification status
-          } : u
-        );
-        setUsers(updatedUsers);
-        
-        // Show success message
         console.log('User updated successfully:', response.data);
-        setSuccessMessage(`User ${selectedUser.nickname} has been successfully updated.`);
-        
-        // Close the dialog after a short delay
-        setTimeout(() => {
-          setIsEditDialogOpen(false);
-          setSuccessMessage(null);
-        }, 1500);
+        setUsers(response.data);
+        setSuccessMessage('Users fetched successfully.');
       } else {
-        throw new Error(`Failed to update user: ${response.status}`);
+        throw new Error(`Failed to fetch users: ${response.status}`);
       }
     } catch (err: unknown) {
       console.error('Error updating user:', err);
-      // Log detailed error information
-      if (axios.isAxiosError(err)) {
-        console.error('Error response:', {
-          status: err.response?.status,
-          data: err.response?.data,
-          headers: err.response?.headers
-        });
-        
-        if (err.response?.status === 401) {
-          setError('Authentication failed. Your admin token may be invalid or expired. Please log out and log back in.');
-        } else {
-          setError(`Failed to update user: ${err.response?.status} ${err.response?.statusText}`);
-        }
-      } else {
-        setError(`Failed to update user: ${(err as Error).message}`);
-      }
+      setError(`Failed to update user: ${(err as Error).message}`);
     } finally {
       setIsUpdatingUser(false);
     }
@@ -430,12 +379,61 @@ export default function AdminDashboard() {
 
   // Format date
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    if (!dateString) return 'N/A';
+    
+    try {
+      return new Date(dateString).toLocaleString();
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Update guest status
+  const updateGuestStatus = async (status: string) => {
+    if (!selectedGuest || !token) return;
+    
+    setIsUpdatingGuest(true);
+    setGuestError(null);
+    setSuccessMessage(null);
+    
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/admin/guests?id=${selectedGuest.id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.status === 200) {
+        console.log('Guest status updated successfully:', response.data);
+        
+        // Update the guest in the local state
+        const updatedGuests = guests.map(g => 
+          g.id === selectedGuest.id ? { ...g, status } : g
+        );
+        
+        setGuests(updatedGuests);
+        setSelectedGuest({ ...selectedGuest, status });
+        setSuccessMessage(`Guest marked as ${status}`);
+        
+        // Close dialog after short delay
+        setTimeout(() => {
+          setIsGuestDetailsDialogOpen(false);
+          setSuccessMessage(null);
+        }, 1500);
+      } else {
+        throw new Error(`Failed to update guest: ${response.status}`);
+      }
+    } catch (err) {
+      console.error('Error updating guest status:', err);
+      setGuestError(`Failed to update guest status: ${(err as Error).message}`);
+    } finally {
+      setIsUpdatingGuest(false);
+    }
   };
 
   return (
@@ -444,8 +442,12 @@ export default function AdminDashboard() {
       subtitle="Manage your TheoForge platform"
     >
       <div className="max-w-7xl mx-auto mt-8">
-        <Tabs defaultValue="users" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="mb-6">
+            <TabsTrigger value="dashboard">
+              <Users className="h-4 w-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger value="users">
               <Users className="h-4 w-4 mr-2" />
               User Management
@@ -458,7 +460,11 @@ export default function AdminDashboard() {
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="users" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-6">
+            <DashboardStats />
+          </TabsContent>
+          
+          <TabsContent value="users" className="space-y-4">
             <div className="flex justify-between items-center mb-6">
               <div className="relative w-full max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1178,14 +1184,18 @@ export default function AdminDashboard() {
           
           <DialogFooter>
             <Button 
-              onClick={() => {
-                // Here we would implement the logic to qualify a lead
-                console.log('Marking guest as qualified:', selectedGuest?.id);
-                setIsGuestDetailsDialogOpen(false);
-              }}
+              onClick={() => updateGuestStatus('QUALIFIED')}
+              disabled={isUpdatingGuest || selectedGuest?.status === 'QUALIFIED'}
               className="mr-2 bg-green-600 hover:bg-green-700"
             >
-              Mark as Qualified
+              {isUpdatingGuest ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                'Mark as Qualified'
+              )}
             </Button>
             <Button 
               variant="outline" 

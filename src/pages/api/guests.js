@@ -29,7 +29,7 @@ async function handleGetRequest(req, res) {
       // Initialize empty array if no data exists yet
       global.storedGuestData = [];
       
-      // For demo purposes, add some mock data if no real data exists
+      // For demo purposes, add some mock data if requested
       if (req.query.includeMock === 'true') {
         const mockData = [
           { 
@@ -87,10 +87,13 @@ async function handleGetRequest(req, res) {
           }
         ];
         
+        // Add mock data to the global storage
         global.storedGuestData = mockData;
-        console.log('Added mock guest data for demonstration');
+        console.log(`Added ${mockData.length} mock guest entries for development/demo purposes`);
+        return res.status(200).json(mockData);
       }
       
+      // If no mock data requested, return empty array
       return res.status(200).json(global.storedGuestData);
     }
     

@@ -70,63 +70,6 @@ const ACTIVITIES = [
   { id: 3, action: 'Completed onboarding', timestamp: '2025-03-28T16:45:00Z' },
 ];
 
-// Mock data for guest chat interactions
-const GUEST_INTERACTIONS = [
-  { 
-    id: 'g1',
-    name: 'John Smith',
-    contact_info: 'john.smith@example.com',
-    company: 'Tech Innovations',
-    industry: 'Software',
-    project_type: ['Web Development', 'Mobile App'],
-    budget: '$50,000 - $100,000',
-    timeline: 'Q3 2025',
-    pain_points: ['Legacy system integration', 'Scalability issues'],
-    current_tech: ['React', 'Node.js', 'MongoDB'],
-    additional_notes: 'Looking for a partner to help modernize our customer portal',
-    session_id: 'sess_123456',
-    status: 'NEW',
-    user_id: 'user_1',
-    user_email: 'admin@theoforge.com',
-    user_role: 'ADMIN',
-    created_at: '2025-04-15T10:30:00Z',
-    interaction_events: ['chat_message_welcome', 'chat_message_email', 'chat_message_company'],
-    interaction_history: [
-      { event: 'chat_message_welcome', timestamp: '2025-04-15T10:30:00Z' },
-      { event: 'chat_message_email', timestamp: '2025-04-15T10:31:00Z' },
-      { event: 'chat_message_company', timestamp: '2025-04-15T10:32:00Z' }
-    ],
-    page_views: ['/about', '/services', '/']
-  },
-  { 
-    id: 'g2',
-    name: 'Sarah Johnson',
-    contact_info: 'sarah.j@example.com',
-    company: 'Healthcare Solutions',
-    industry: 'Healthcare',
-    project_type: ['Enterprise Software'],
-    budget: '$100,000+',
-    timeline: 'Q4 2025',
-    pain_points: ['Data security', 'Compliance requirements', 'User experience'],
-    current_tech: ['Java', 'Oracle', 'Angular'],
-    additional_notes: 'Need to ensure HIPAA compliance in our new patient portal',
-    session_id: 'sess_789012',
-    status: 'NEW',
-    user_id: 'user_2',
-    user_email: 'user@theoforge.com',
-    user_role: 'USER',
-    created_at: '2025-04-18T14:45:00Z',
-    interaction_events: ['chat_message_welcome', 'chat_message_email', 'chat_message_company', 'chat_message_industry'],
-    interaction_history: [
-      { event: 'chat_message_welcome', timestamp: '2025-04-18T14:45:00Z' },
-      { event: 'chat_message_email', timestamp: '2025-04-18T14:46:00Z' },
-      { event: 'chat_message_company', timestamp: '2025-04-18T14:47:00Z' },
-      { event: 'chat_message_industry', timestamp: '2025-04-18T14:48:00Z' }
-    ],
-    page_views: ['/', '/services', '/insights']
-  }
-];
-
 export default function Dashboard() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const router = useRouter();
@@ -182,12 +125,12 @@ export default function Dashboard() {
       } else {
         console.error('Failed to fetch guest interactions:', response.statusText);
         // Fall back to mock data if API fails
-        setGuestInteractions(GUEST_INTERACTIONS);
+        setGuestInteractions([]);
       }
     } catch (error) {
       console.error('Error fetching guest interactions:', error);
-      // Fall back to mock data if API fails
-      setGuestInteractions(GUEST_INTERACTIONS);
+      // Fall back to empty array if API fails
+      setGuestInteractions([]);
     } finally {
       setIsLoadingGuests(false);
     }
